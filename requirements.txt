@@ -1,3 +1,6 @@
 altair
 pandas
 streamlit
+numpy
+face_recognition
+opencv-python-headless
