@@ -54,43 +54,44 @@ def main():
                     known_face_labels.append("Person " + str(len(known_face_encodings)))
                     st.success("Face saved!")
 
-        # Display the frame with faces
-        st.image(frame, channels="BGR", use_column_width=True)
-
-        # Check if "Recognize Face" checkbox is checked
+        # Display the frame with faces only if "Recognize Face" checkbox is checked
         if recognize_face_checkbox:
-            # Pause for one second
-            time.sleep(1)
+            st.image(frame, channels="BGR", use_column_width=True)
 
-            # Capture another frame
-            ret, frame = video_capture.read()
+            # Check if "Recognize Face" checkbox is checked
+            if recognize_face_checkbox:
+                # Pause for one second
+                time.sleep(1)
 
-            # Convert the frame to grayscale for face detection
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                # Capture another frame
+                ret, frame = video_capture.read()
 
-            # Detect faces in the frame
-            faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+                # Convert the frame to grayscale for face detection
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-            # Loop over detected faces
-            for (x, y, w, h) in faces:
-                # Extract the face region
-                face_image = frame[y:y+h, x:x+w]
+                # Detect faces in the frame
+                faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
-                # Convert BGR image to RGB
-                rgb_face_image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
+                # Loop over detected faces
+                for (x, y, w, h) in faces:
+                    # Extract the face region
+                    face_image = frame[y:y+h, x:x+w]
 
-                # Encode the face using face_recognition library
-                current_face_encoding = face_recognition.face_encodings(rgb_face_image)
+                    # Convert BGR image to RGB
+                    rgb_face_image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
 
-                if current_face_encoding:
-                    # Compare the current face with known faces
-                    results = face_recognition.compare_faces(known_face_encodings, current_face_encoding[0])
-                    labels = np.array(known_face_labels)
+                    # Encode the face using face_recognition library
+                    current_face_encoding = face_recognition.face_encodings(rgb_face_image)
 
-                    # Check if there is a match
-                    if True in results:
-                        matching_label = labels[results.index(True)]
-                        st.success(f"Face recognized as {matching_label}")
+                    if current_face_encoding:
+                        # Compare the current face with known faces
+                        results = face_recognition.compare_faces(known_face_encodings, current_face_encoding[0])
+                        labels = np.array(known_face_labels)
+
+                        # Check if there is a match
+                        if True in results:
+                            matching_label = labels[results.index(True)]
+                            st.success(f"Face recognized as {matching_label}")
 
 if __name__ == "__main__":
     main()
