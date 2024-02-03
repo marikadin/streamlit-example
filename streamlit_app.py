@@ -52,7 +52,7 @@ def main():
         # Check if there are known faces
         if known_face_encodings:
             # Pause for one second
-            time.sleep(1)
+            time.sleep(5)
 
             # Capture another frame
             ret, frame = video_capture.read()
