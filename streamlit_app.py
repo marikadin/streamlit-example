@@ -59,12 +59,7 @@ def main():
     # Checkbox to recognize face
     recognize_face_button = st.button("Recognize Face")
 
-    # Timeout for face recognition (in seconds)
-    timeout_duration = 300  # 5 minutes
-
-    start_time = time.time()
-
-    while time.time() - start_time < timeout_duration and not st.session_state.stop_loop:
+    while not st.session_state.stop_loop:
         # Capture frame-by-frame
         ret, frame = video_capture.read()
 
@@ -117,7 +112,7 @@ def main():
                 # Stop the loop after recognizing the face
                 st.session_state.stop_loop = True
 
-    st.warning("Face recognition timeout reached or stopped. Stopping face recognition.")
+    st.warning("Face recognition stopped. Stopping face recognition.")
 
 if __name__ == "__main__":
     main()
