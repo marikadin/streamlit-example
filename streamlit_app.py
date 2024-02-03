@@ -70,9 +70,6 @@ def main():
 
         # Check if "Recognize Face" button is clicked
         if recognize_face_button:
-            # Pause for one second
-            st.image("")
-
             # Capture another frame
             ret, frame = video_capture.read()
 
