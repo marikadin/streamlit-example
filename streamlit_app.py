@@ -2,7 +2,6 @@ import cv2
 import face_recognition
 import streamlit as st
 import numpy as np
-import time
 
 # Load the pre-trained face detection model from OpenCV
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -14,8 +13,6 @@ if 'known_face_labels' not in st.session_state:
     st.session_state.known_face_labels = []
 if 'scanning_face' not in st.session_state:
     st.session_state.scanning_face = False
-if 'stop_loop' not in st.session_state:
-    st.session_state.stop_loop = False
 
 def recognize_face(frame, known_face_encodings, known_face_labels):
     # Convert the frame to grayscale for face detection
@@ -43,9 +40,9 @@ def recognize_face(frame, known_face_encodings, known_face_labels):
             # Check if there is a match
             if True in results:
                 matching_label = labels[results.index(True)]
-                return matching_label
+                return matching_label, face_image
 
-    return None
+    return None, None
 
 def main():
     st.title("Face Recognition App")
@@ -59,7 +56,11 @@ def main():
     # Checkbox to recognize face
     recognize_face_button = st.button("Recognize Face")
 
-    while not st.session_state.stop_loop:
+    recognized_name = None
+    recognized_image = None
+
+    # Face recognition loop
+    while not st.session_state.scanning_face and not recognized_name:
         # Capture frame-by-frame
         ret, frame = video_capture.read()
 
@@ -91,28 +92,26 @@ def main():
                     if name:
                         st.session_state.known_face_labels.append(name)
                         st.write(f"Face saved for {name}!")
-                        st.session_state.stop_loop = True
-                    st.session_state.scanning_face = True
+                        st.session_state.scanning_face = True
 
         # Display the frame with faces
         st.image(frame, channels="BGR", use_column_width=True)
 
-        # Check if "Recognize Face" button is clicked
-        if recognize_face_button:
-            # Capture another frame
-            ret, frame = video_capture.read()
+    # Check if "Recognize Face" button is clicked
+    if st.session_state.scanning_face or recognize_face_button:
+        # Capture another frame
+        ret, frame = video_capture.read()
 
-            # Call the function to recognize the face
-            recognized_name = recognize_face(frame, st.session_state.known_face_encodings, st.session_state.known_face_labels)
+        # Call the function to recognize the face
+        recognized_name, recognized_image = recognize_face(frame, st.session_state.known_face_encodings, st.session_state.known_face_labels)
 
-            # Display the recognized face
-            if recognized_name:
-                st.image(frame, channels="BGR", use_column_width=True, caption=f"Recognized as: {recognized_name}")
-                st.write(f"Face recognized as {recognized_name}")
-                # Stop the loop after recognizing the face
-                st.session_state.stop_loop = True
+        # Display the recognized face
+        if recognized_name and recognized_image is not None:
+            st.image(recognized_image, channels="BGR", use_column_width=True, caption=f"Recognized as: {recognized_name}")
+            st.write(f"Face recognized as {recognized_name}")
 
-    st.warning("Face recognition stopped. Stopping face recognition.")
+    # Release the video capture object
+    video_capture.release()
 
 if __name__ == "__main__":
     main()
