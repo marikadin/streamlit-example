@@ -2,6 +2,7 @@ import cv2
 import face_recognition
 import streamlit as st
 import numpy as np
+import time
 
 # Load the pre-trained face detection model from OpenCV
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -13,8 +14,6 @@ if 'known_face_labels' not in st.session_state:
     st.session_state.known_face_labels = []
 if 'scanning_face' not in st.session_state:
     st.session_state.scanning_face = False
-if 'first_saved_image' not in st.session_state:
-    st.session_state.first_saved_image = None
 
 def recognize_face(frame, known_face_encodings, known_face_labels):
     # Convert the frame to grayscale for face detection
@@ -52,17 +51,14 @@ def main():
     # Create a webcam instance
     video_capture = cv2.VideoCapture(0)
 
-    # Checkbox to save face
-    save_face_button = st.button("Save Face")
-
     # Checkbox to recognize face
     recognize_face_button = st.button("Recognize Face")
 
     recognized_name = None
     recognized_image = None
 
-    # Face recognition loop
-    while not st.session_state.scanning_face and not recognized_name:
+    # Capture images every 5 seconds until face is successfully saved
+    while not st.session_state.scanning_face:
         # Capture frame-by-frame
         ret, frame = video_capture.read()
 
@@ -87,42 +83,21 @@ def main():
                 # Draw rectangle around the face
                 cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
-                # Save the face encoding and label if "Save Face" button is clicked
-                if save_face_button and not st.session_state.scanning_face:
+                # Save the face encoding and label if "Recognize Face" button is clicked
+                if recognize_face_button and not st.session_state.scanning_face:
                     st.session_state.known_face_encodings.append(face_encoding[0])
                     name = st.text_input("Enter the name for the person:")
                     if name:
                         st.session_state.known_face_labels.append(name)
-                        st.session_state.first_saved_image = frame.copy()
                         st.write(f"Face saved for {name}!")
                         st.session_state.scanning_face = True
+                        break  # Exit the loop after successfully saving the face
 
         # Display the frame with faces
         st.image(frame, channels="BGR", use_column_width=True)
 
-    # Display the first successfully saved image while naming the face
-    if st.session_state.first_saved_image is not None:
-        st.image(st.session_state.first_saved_image, channels="BGR", use_column_width=True, caption="First Successfully Saved Image")
-
-    # Provide a text input bar to enter the name for the person
-    if not st.session_state.scanning_face:
-        name = st.text_input("Enter the name for the person:")
-        if name:
-            st.session_state.known_face_labels.append(name)
-            st.write(f"Face saved for {name}!")
-
-    # Check if "Recognize Face" button is clicked
-    if st.session_state.scanning_face or recognize_face_button:
-        # Capture another frame
-        ret, frame = video_capture.read()
-
-        # Call the function to recognize the face
-        recognized_name, recognized_image = recognize_face(frame, st.session_state.known_face_encodings, st.session_state.known_face_labels)
-
-        # Display the recognized face
-        if recognized_name and recognized_image is not None:
-            st.image(recognized_image, channels="BGR", use_column_width=True, caption=f"Recognized as: {recognized_name}")
-            st.write(f"Face recognized as {recognized_name}")
+        # Wait for 5 seconds before capturing the next image
+        time.sleep(5)
 
     # Release the video capture object
     video_capture.release()
