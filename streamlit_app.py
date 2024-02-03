@@ -62,7 +62,7 @@ def main():
                     name = st.text_input("Enter the name for the person:")
                     if name:
                         known_face_labels.append(name)
-                        st.success(f"Face saved for {name}!")
+                        st.write(f"Face saved for {name}!")
                     scanning_face = True
 
         # Display the frame with faces
@@ -98,7 +98,7 @@ def main():
                     # Check if there is a match
                     if True in results:
                         matching_label = labels[results.index(True)]
-                        st.success(f"Face recognized as {matching_label}")
+                        st.write(f"Face recognized as {matching_label}")
 
     st.warning("Face recognition timeout reached. Stopping face recognition.")
 
