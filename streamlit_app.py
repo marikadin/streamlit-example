@@ -36,14 +36,17 @@ def recognize_face(frame, known_face_encodings, known_face_labels):
         if current_face_encoding:
             # Compare the current face with known faces
             results = face_recognition.compare_faces(known_face_encodings, current_face_encoding[0])
-            labels = np.array(known_face_labels)
 
             # Check if there is a match
             if True in results:
-                matching_label = labels[results.index(True)]
+                matching_label = None
+                if known_face_labels:  # Check if known_face_labels is not empty
+                    labels = np.array(known_face_labels)
+                    matching_label = labels[results.index(True)]
                 return matching_label, face_image
 
     return None, None
+
 
 def main():
     st.title("Face Recognition App")
@@ -118,3 +121,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
