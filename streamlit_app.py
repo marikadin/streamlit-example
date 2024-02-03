@@ -13,6 +13,8 @@ if 'known_face_labels' not in st.session_state:
     st.session_state.known_face_labels = []
 if 'scanning_face' not in st.session_state:
     st.session_state.scanning_face = False
+if 'first_saved_image' not in st.session_state:
+    st.session_state.first_saved_image = None
 
 def recognize_face(frame, known_face_encodings, known_face_labels):
     # Convert the frame to grayscale for face detection
@@ -91,11 +93,23 @@ def main():
                     name = st.text_input("Enter the name for the person:")
                     if name:
                         st.session_state.known_face_labels.append(name)
+                        st.session_state.first_saved_image = frame.copy()
                         st.write(f"Face saved for {name}!")
                         st.session_state.scanning_face = True
 
         # Display the frame with faces
         st.image(frame, channels="BGR", use_column_width=True)
+
+    # Display the first successfully saved image while naming the face
+    if st.session_state.first_saved_image is not None:
+        st.image(st.session_state.first_saved_image, channels="BGR", use_column_width=True, caption="First Successfully Saved Image")
+
+    # Provide a text input bar to enter the name for the person
+    if not st.session_state.scanning_face:
+        name = st.text_input("Enter the name for the person:")
+        if name:
+            st.session_state.known_face_labels.append(name)
+            st.write(f"Face saved for {name}!")
 
     # Check if "Recognize Face" button is clicked
     if st.session_state.scanning_face or recognize_face_button:
