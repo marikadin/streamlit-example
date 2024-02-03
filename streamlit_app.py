@@ -61,7 +61,7 @@ def main():
     recognized_image = None
 
     # Face recognition loop
-    while not st.session_state.scanning_face and not recognized_name:
+    while not recognized_name:
         # Capture frame-by-frame
         ret, frame = video_capture.read()
 
@@ -99,21 +99,19 @@ def main():
                         st.session_state.scanning_face = True
                         break
 
-                # Pause for 5 seconds before capturing the next frame
-                time.sleep(5)
+        # Check if "Recognize Face" button is clicked
+        if recognize_face_button:
+            # Call the function to recognize the face
+            recognized_name, recognized_image = recognize_face(frame, st.session_state.known_face_encodings, st.session_state.known_face_labels)
 
-    # Check if "Recognize Face" button is clicked
-    if st.session_state.scanning_face or recognize_face_button:
-        # Capture another frame
-        ret, frame = video_capture.read()
+            # Display the recognized face
+            if recognized_name and recognized_image is not None:
+                st.image(recognized_image, channels="BGR", use_column_width=True, caption=f"Recognized as: {recognized_name}")
+                st.write(f"Face recognized as {recognized_name}")
+                break
 
-        # Call the function to recognize the face
-        recognized_name, recognized_image = recognize_face(frame, st.session_state.known_face_encodings, st.session_state.known_face_labels)
-
-        # Display the recognized face
-        if recognized_name and recognized_image is not None:
-            st.image(recognized_image, channels="BGR", use_column_width=True, caption=f"Recognized as: {recognized_name}")
-            st.write(f"Face recognized as {recognized_name}")
+        # Pause for 5 seconds before capturing the next frame
+        time.sleep(5)
 
     # Release the video capture object
     video_capture.release()
