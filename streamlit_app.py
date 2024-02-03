@@ -2,6 +2,7 @@ import cv2
 import face_recognition
 import streamlit as st
 import numpy as np
+import time
 
 # Load the pre-trained face detection model from OpenCV
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -25,7 +26,12 @@ def main():
     # Flag to indicate face scanning
     scanning_face = False
 
-    while True:
+    # Timeout for face recognition (in seconds)
+    timeout_duration = 300  # 5 minutes
+
+    start_time = time.time()
+
+    while time.time() - start_time < timeout_duration:
         # Capture frame-by-frame
         ret, frame = video_capture.read()
 
@@ -93,4 +99,11 @@ def main():
                     labels = np.array(known_face_labels)
 
                     # Check if there is a match
-                   
+                    if True in results:
+                        matching_label = labels[results.index(True)]
+                        st.success(f"Face recognized as {matching_label}")
+
+    st.warning("Face recognition timeout reached. Stopping face recognition.")
+
+if __name__ == "__main__":
+    main()
