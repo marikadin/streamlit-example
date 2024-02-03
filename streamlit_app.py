@@ -17,6 +17,12 @@ def main():
     known_face_encodings = []
     known_face_labels = []
 
+    # Button to save face
+    save_face_button = st.button("Save Face")
+
+    # Button to recognize face
+    recognize_face_button = st.button("Recognize Face")
+
     while True:
         # Capture frame-by-frame
         ret, frame = video_capture.read()
@@ -42,17 +48,19 @@ def main():
                 # Draw rectangle around the face
                 cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
-                # Save the face encoding and label
-                known_face_encodings.append(face_encoding[0])
-                known_face_labels.append("Person " + str(len(known_face_encodings)))
+                # Save the face encoding and label if "Save Face" button is clicked
+                if save_face_button:
+                    known_face_encodings.append(face_encoding[0])
+                    known_face_labels.append("Person " + str(len(known_face_encodings)))
+                    st.success("Face saved!")
 
         # Display the frame with faces
         st.image(frame, channels="BGR", use_column_width=True)
 
-        # Check if there are known faces
-        if known_face_encodings:
+        # Check if "Recognize Face" button is clicked
+        if recognize_face_button:
             # Pause for one second
-            time.sleep(5)
+            time.sleep(1)
 
             # Capture another frame
             ret, frame = video_capture.read()
