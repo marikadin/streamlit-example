@@ -31,8 +31,11 @@ def main():
             # Extract the face region
             face_image = frame[y:y+h, x:x+w]
 
+            # Convert BGR image to RGB
+            rgb_face_image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
+
             # Encode the face using face_recognition library
-            face_encoding = face_recognition.face_encodings(face_image)
+            face_encoding = face_recognition.face_encodings(rgb_face_image)
 
             if face_encoding:
                 # Draw rectangle around the face
@@ -61,8 +64,11 @@ def main():
                 # Extract the face region
                 face_image = frame[y:y+h, x:x+w]
 
+                # Convert BGR image to RGB
+                rgb_face_image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
+
                 # Encode the face using face_recognition library
-                current_face_encoding = face_recognition.face_encodings(face_image)
+                current_face_encoding = face_recognition.face_encodings(rgb_face_image)
 
                 if current_face_encoding:
                     # Compare the current face with known faces
