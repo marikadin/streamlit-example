@@ -96,6 +96,7 @@ def main():
                     if name:
                         st.session_state.known_face_labels.append(name)
                         st.write(f"Face saved for {name}!")
+                        st.session_state.stop_loop = True
                     st.session_state.scanning_face = True
 
         # Display the frame with faces
