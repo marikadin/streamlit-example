@@ -2,6 +2,7 @@ import cv2
 import face_recognition
 import streamlit as st
 import numpy as np
+import time
 
 # Load the pre-trained face detection model from OpenCV
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -50,6 +51,9 @@ def main():
 
         # Check if there are known faces
         if known_face_encodings:
+            # Pause for one second
+            time.sleep(1)
+
             # Capture another frame
             ret, frame = video_capture.read()
 
