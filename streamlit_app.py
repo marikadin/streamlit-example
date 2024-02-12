@@ -49,6 +49,7 @@ def recognize_face(frame, known_face_encodings, known_face_labels):
 
 
 def main():
+
     st.title("Face Recognition App")
 
     # Create a webcam instance
